@@ -19,7 +19,13 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(
 .unit-toggle span:not(.active):hover{color:var(--text)}
 .layout{display:flex;height:calc(100vh - 52px)}
 .sidebar{width:340px;min-width:340px;overflow-y:auto;border-right:1px solid var(--border);padding:8px}
-.main{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:16px}
+.main{flex:1;overflow-y:auto;padding:0;display:flex;flex-direction:column}
+.tabs{display:flex;border-bottom:1px solid var(--border);background:var(--panel)}
+.tab{padding:10px 24px;font-size:.85em;font-weight:600;cursor:pointer;color:var(--dim);border-bottom:2px solid transparent;transition:all .2s}
+.tab:hover{color:var(--text)}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+.tab-content{display:none;flex:1;overflow-y:auto;padding:16px;flex-direction:column;gap:16px}
+.tab-content.active{display:flex}
 .section{background:var(--panel);border:1px solid var(--border);border-radius:8px;margin-bottom:6px}
 .sec-head{padding:10px 14px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;font-weight:600;font-size:.85em;user-select:none}
 .sec-head:hover{background:rgba(255,255,255,.03)}
@@ -37,7 +43,6 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(
 .res-card{background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:12px 16px;min-width:140px;flex:1}
 .res-card .val{font-size:1.4em;font-weight:700;color:var(--accent)}
 .res-card .lbl{font-size:.72em;color:var(--dim);margin-top:2px}
-.res-card.warn .val{color:var(--warn)}
 .res-card.cls .val{color:var(--accent2);font-size:1.6em}
 .charts{display:flex;gap:16px;flex-wrap:wrap}
 .chart-box{flex:1;min-width:300px;background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:12px}
@@ -58,6 +63,26 @@ svg{display:block}
 .preset-row{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:10px}
 .preset-btn{background:#181b20;border:1px solid var(--border);color:var(--dim);padding:4px 8px;border-radius:4px;font-size:.7em;cursor:pointer}
 .preset-btn:hover,.preset-btn.active{border-color:var(--accent);color:var(--accent)}
+/* Burn animation */
+.burn-container{background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:16px;flex:1;display:flex;flex-direction:column}
+.burn-container h3{font-size:.85em;color:var(--dim);margin-bottom:10px}
+.burn-canvas-wrap{flex:1;min-height:300px;position:relative}
+.burn-canvas-wrap canvas{position:absolute;top:0;left:0;width:100%;height:100%}
+.burn-controls{display:flex;align-items:center;gap:12px;margin-top:12px;flex-wrap:wrap}
+.burn-controls button{background:#181b20;border:1px solid var(--border);color:var(--text);width:36px;height:36px;border-radius:6px;cursor:pointer;font-size:1em;display:flex;align-items:center;justify-content:center}
+.burn-controls button:hover{border-color:var(--accent);color:var(--accent)}
+.burn-controls button.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.burn-slider{flex:1;min-width:120px;-webkit-appearance:none;appearance:none;height:6px;border-radius:3px;background:#181b20;outline:none}
+.burn-slider::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:var(--accent);cursor:pointer;border:2px solid #fff}
+.burn-slider::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:var(--accent);cursor:pointer;border:2px solid #fff}
+.burn-time{font-size:.85em;color:var(--accent);font-weight:600;min-width:60px}
+.burn-stats{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
+.burn-stat{background:#181b20;border:1px solid var(--border);border-radius:6px;padding:8px 14px;flex:1;min-width:120px}
+.burn-stat .bval{font-size:1.1em;font-weight:700;color:var(--accent)}
+.burn-stat .blbl{font-size:.7em;color:var(--dim);margin-top:2px}
+.speed-btns{display:flex;gap:2px}
+.speed-btns button{width:auto;padding:0 8px;font-size:.72em;font-weight:600}
+.speed-btns button.active{background:var(--accent)}
 @media(max-width:900px){.layout{flex-direction:column;height:auto}.sidebar{width:100%;min-width:0;max-height:50vh;border-right:none;border-bottom:1px solid var(--border)}.charts{flex-direction:column}}
 @media print{
   *{-webkit-print-color-adjust:exact;print-color-adjust:exact;color-adjust:exact}
@@ -65,33 +90,29 @@ svg{display:block}
   .header{background:#fff!important;border-bottom:2px solid #111;padding:8px 16px}
   .header h1{-webkit-text-fill-color:#111;font-size:1.4em}
   .header .sub{color:#444}
-  .unit-toggle{border-color:#999}
-  .unit-toggle span.active{background:#333;color:#fff}
-  .unit-toggle span:not(.active){color:#666}
+  .unit-toggle{border-color:#999}.unit-toggle span.active{background:#333;color:#fff}.unit-toggle span:not(.active){color:#666}
   .layout{flex-direction:column;height:auto}
   .sidebar{width:100%;min-width:0;max-height:none;border:none;overflow:visible;padding:0 8px}
   .section{background:#fff;border:1px solid #999;break-inside:avoid;margin-bottom:8px}
-  .sec-head{color:#111} .sec-body{display:block!important}
-  .field label{color:#444} .field input,.field select{border:1px solid #999;background:#fff;color:#111}
+  .sec-head{color:#111}.sec-body{display:block!important}
+  .field label{color:#444}.field input,.field select{border:1px solid #999;background:#fff;color:#111}
   .btn{display:none}
+  .tabs{background:#fff;border-bottom:2px solid #111}.tab{color:#333}.tab.active{color:#111;border-bottom-color:#111}
+  .tab-content{display:flex!important}
   .main{padding:8px}
-  .nozzle-wrap{background:#fff;border:1px solid #999;break-inside:avoid}
-  .nozzle-wrap h3,.chart-box h3,.flight-events h3{color:#333}
-  .res-card{background:#fff;border:1px solid #999;break-inside:avoid}
-  .res-card .lbl{color:#444}
-  .res-card .val{color:#111!important}
-  .res-card.cls .val{color:#333!important;font-weight:800}
-  .chart-box{background:#fff;border:1px solid #999;break-inside:avoid}
-  .flight-events{background:#fff;border:1px solid #999;break-inside:avoid}
+  .nozzle-wrap,.chart-box,.flight-events,.burn-container{background:#fff;border:1px solid #999;break-inside:avoid}
+  .nozzle-wrap h3,.chart-box h3,.flight-events h3,.burn-container h3{color:#333}
+  .res-card{background:#fff;border:1px solid #999;break-inside:avoid}.res-card .lbl{color:#444}.res-card .val{color:#111!important}.res-card.cls .val{color:#333!important;font-weight:800}
   .evt{color:#111}
-  .preset-row{display:none}
-  .nozzle-hint{color:#555}
+  .preset-row{display:none}.nozzle-hint{color:#555}
+  .burn-controls{display:none}
+  .burn-stat{background:#fff;border:1px solid #999}.burn-stat .bval{color:#111}.burn-stat .blbl{color:#444}
 }
 </style>
 </head>
 <body>
 <div class="header">
-  <h1>&#9650; Villani Rocket Engine Calculator</h1>
+  <h1>&#9650; Villani Rocket Engine Calculator and Simulator</h1>
   <span class="sub">BATES Grain &bull; De Laval Nozzle &bull; Flight Simulation</span>
   <span class="spacer"></span>
   <div class="unit-toggle" id="unitToggle">
@@ -101,339 +122,527 @@ svg{display:block}
 </div>
 <div class="layout">
 <div class="sidebar" id="sidebar"></div>
-<div class="main" id="main"></div>
+<div class="main" id="main">
+  <div class="tabs">
+    <div class="tab active" data-tab="analysis">Analysis</div>
+    <div class="tab" data-tab="burn">Burn Animation</div>
+  </div>
+  <div class="tab-content active" id="tab-analysis"></div>
+  <div class="tab-content" id="tab-burn"></div>
+</div>
 </div>
 
 <script>
-// ── All internal state is METRIC (mm, kg, m, m/s, g/cm³) ──
+// ── State ──
 const S = {
-  grainOD:38, grainID:12, grainLen:70, grainCount:3,
-  propA:8.26, propN:0.319, propRho:1.841, propCstar:889, propGamma:1.133,
-  nozThroat:10, nozExit:18, nozConvAngle:45, nozDivAngle:15,
-  rktMass:0.8, rktDiam:52, rktCd:0.45,
-  drogueCd:1.5, drogueDiam:0.3, mainCd:2.2, mainDiam:0.9, mainAlt:150,
+  grainOD:38,grainID:12,grainLen:70,grainCount:3,
+  propA:8.26,propN:0.319,propRho:1.841,propCstar:889,propGamma:1.133,
+  nozThroat:10,nozExit:18,nozConvAngle:45,nozDivAngle:15,
+  rktMass:0.8,rktDiam:52,rktCd:0.45,
+  drogueCd:1.5,drogueDiam:0.3,mainCd:2.2,mainDiam:0.9,mainAlt:150,
+};
+let units='imp';
+const MM_IN=25.4,KG_LB=2.20462,M_FT=3.28084,N_LBF=4.44822,GCM3_LBIN3=27.68,MPS_FPS=0.3048;
+
+const FIELDS={
+  grainOD:{ml:'Outer Dia (mm)',il:'Outer Dia (in)',toI:v=>v/MM_IN,toM:v=>v*MM_IN,sm:.5,si:.025,min:0},
+  grainID:{ml:'Core Dia (mm)',il:'Core Dia (in)',toI:v=>v/MM_IN,toM:v=>v*MM_IN,sm:.5,si:.025,min:0},
+  grainLen:{ml:'Length (mm)',il:'Length (in)',toI:v=>v/MM_IN,toM:v=>v*MM_IN,sm:1,si:.05,min:0},
+  grainCount:{ml:'# Grains',il:'# Grains',toI:v=>v,toM:v=>v,sm:1,si:1,min:1},
+  propA:{ml:'Burn Rate a (mm/s)',il:'Burn Rate a (mm/s)',toI:v=>v,toM:v=>v,sm:.01,si:.01,min:0},
+  propN:{ml:'Pressure Exp n',il:'Pressure Exp n',toI:v=>v,toM:v=>v,sm:.001,si:.001,min:0},
+  propRho:{ml:'Density (g/cm³)',il:'Density (lb/in³)',toI:v=>v/GCM3_LBIN3,toM:v=>v*GCM3_LBIN3,sm:.001,si:.0001,min:0},
+  propCstar:{ml:'c* (m/s)',il:'c* (ft/s)',toI:v=>v/MPS_FPS,toM:v=>v*MPS_FPS,sm:1,si:1,min:0},
+  propGamma:{ml:'γ (Cp/Cv)',il:'γ (Cp/Cv)',toI:v=>v,toM:v=>v,sm:.001,si:.001,min:1.01},
+  nozThroat:{ml:'Throat Dia (mm)',il:'Throat Dia (in)',toI:v=>v/MM_IN,toM:v=>v*MM_IN,sm:.5,si:.025,min:0},
+  nozExit:{ml:'Exit Dia (mm)',il:'Exit Dia (in)',toI:v=>v/MM_IN,toM:v=>v*MM_IN,sm:.5,si:.025,min:0},
+  nozConvAngle:{ml:'Conv Half-Angle (°)',il:'Conv Half-Angle (°)',toI:v=>v,toM:v=>v,sm:1,si:1,min:10},
+  nozDivAngle:{ml:'Div Half-Angle (°)',il:'Div Half-Angle (°)',toI:v=>v,toM:v=>v,sm:1,si:1,min:5},
+  rktMass:{ml:'Dry Mass (kg)',il:'Dry Mass (lb)',toI:v=>v*KG_LB,toM:v=>v/KG_LB,sm:.01,si:.01,min:0},
+  rktDiam:{ml:'Body Dia (mm)',il:'Body Dia (in)',toI:v=>v/MM_IN,toM:v=>v*MM_IN,sm:1,si:.05,min:0},
+  rktCd:{ml:'Drag Coeff Cd',il:'Drag Coeff Cd',toI:v=>v,toM:v=>v,sm:.01,si:.01,min:.1},
+  drogueCd:{ml:'Drogue Cd',il:'Drogue Cd',toI:v=>v,toM:v=>v,sm:.1,si:.1,min:.5},
+  drogueDiam:{ml:'Drogue Dia (m)',il:'Drogue Dia (ft)',toI:v=>v*M_FT,toM:v=>v/M_FT,sm:.05,si:.1,min:0},
+  mainCd:{ml:'Main Cd',il:'Main Cd',toI:v=>v,toM:v=>v,sm:.1,si:.1,min:.5},
+  mainDiam:{ml:'Main Dia (m)',il:'Main Dia (ft)',toI:v=>v*M_FT,toM:v=>v/M_FT,sm:.05,si:.1,min:0},
+  mainAlt:{ml:'Main Deploy Alt (m)',il:'Main Deploy Alt (ft)',toI:v=>v*M_FT,toM:v=>v/M_FT,sm:10,si:25,min:0},
+};
+const PRESETS={
+  'KNSB':{propA:8.26,propN:.319,propRho:1.841,propCstar:889,propGamma:1.133},
+  'KNSU':{propA:8.26,propN:.319,propRho:1.889,propCstar:907,propGamma:1.133},
+  'KNDX':{propA:5.13,propN:.22,propRho:1.879,propCstar:887,propGamma:1.131},
 };
 
-let units = 'imp'; // 'imp' or 'met'
+function dispVal(k){const f=FIELDS[k];return parseFloat((units==='imp'?f.toI(S[k]):S[k]).toPrecision(6));}
+function fieldLabel(k){return units==='imp'?FIELDS[k].il:FIELDS[k].ml;}
+function fieldStep(k){return units==='imp'?FIELDS[k].si:FIELDS[k].sm;}
 
-// ── Conversion helpers ──
-const MM_IN = 25.4;
-const KG_LB = 2.20462;
-const M_FT = 3.28084;
-const N_LBF = 4.44822;
-const GCM3_LBIN3 = 27.68;
-const MPS_FPS = 0.3048;
-
-// Field definitions: key, metric label, metric unit, imperial label, imperial unit, toImp(metricVal), toMet(impVal), step_met, step_imp, min
-const FIELDS = {
-  grainOD:    {ml:'Outer Dia (mm)', il:'Outer Dia (in)',     toI:v=>v/MM_IN,       toM:v=>v*MM_IN,       sm:0.5,  si:0.025, min:0},
-  grainID:    {ml:'Core Dia (mm)',   il:'Core Dia (in)',      toI:v=>v/MM_IN,       toM:v=>v*MM_IN,       sm:0.5,  si:0.025, min:0},
-  grainLen:   {ml:'Length (mm)',      il:'Length (in)',         toI:v=>v/MM_IN,       toM:v=>v*MM_IN,       sm:1,    si:0.05,  min:0},
-  grainCount: {ml:'# Grains',        il:'# Grains',           toI:v=>v,             toM:v=>v,             sm:1,    si:1,     min:1},
-  propA:      {ml:'Burn Rate a (mm/s)',il:'Burn Rate a (mm/s)',toI:v=>v,             toM:v=>v,             sm:0.01, si:0.01,  min:0},
-  propN:      {ml:'Pressure Exp n',   il:'Pressure Exp n',    toI:v=>v,             toM:v=>v,             sm:0.001,si:0.001, min:0},
-  propRho:    {ml:'Density (g/cm³)',  il:'Density (lb/in³)',   toI:v=>v/GCM3_LBIN3, toM:v=>v*GCM3_LBIN3,  sm:0.001,si:0.0001,min:0},
-  propCstar:  {ml:'c* (m/s)',         il:'c* (ft/s)',          toI:v=>v/MPS_FPS,     toM:v=>v*MPS_FPS,     sm:1,    si:1,     min:0},
-  propGamma:  {ml:'γ (Cp/Cv)',        il:'γ (Cp/Cv)',          toI:v=>v,             toM:v=>v,             sm:0.001,si:0.001, min:1.01},
-  nozThroat:  {ml:'Throat Dia (mm)', il:'Throat Dia (in)',    toI:v=>v/MM_IN,       toM:v=>v*MM_IN,       sm:0.5,  si:0.025, min:0},
-  nozExit:    {ml:'Exit Dia (mm)',   il:'Exit Dia (in)',      toI:v=>v/MM_IN,       toM:v=>v*MM_IN,       sm:0.5,  si:0.025, min:0},
-  nozConvAngle:{ml:'Conv Half-Angle (°)',il:'Conv Half-Angle (°)',toI:v=>v,          toM:v=>v,             sm:1,    si:1,     min:10},
-  nozDivAngle:{ml:'Div Half-Angle (°)',il:'Div Half-Angle (°)',toI:v=>v,            toM:v=>v,             sm:1,    si:1,     min:5},
-  rktMass:    {ml:'Dry Mass (kg)',    il:'Dry Mass (lb)',      toI:v=>v*KG_LB,      toM:v=>v/KG_LB,       sm:0.01, si:0.01,  min:0},
-  rktDiam:    {ml:'Body Dia (mm)',    il:'Body Dia (in)',      toI:v=>v/MM_IN,       toM:v=>v*MM_IN,       sm:1,    si:0.05,  min:0},
-  rktCd:      {ml:'Drag Coeff Cd',   il:'Drag Coeff Cd',      toI:v=>v,             toM:v=>v,             sm:0.01, si:0.01,  min:0.1},
-  drogueCd:   {ml:'Drogue Cd',       il:'Drogue Cd',          toI:v=>v,             toM:v=>v,             sm:0.1,  si:0.1,   min:0.5},
-  drogueDiam: {ml:'Drogue Dia (m)',   il:'Drogue Dia (ft)',    toI:v=>v*M_FT,       toM:v=>v/M_FT,        sm:0.05, si:0.1,   min:0},
-  mainCd:     {ml:'Main Cd',          il:'Main Cd',            toI:v=>v,             toM:v=>v,             sm:0.1,  si:0.1,   min:0.5},
-  mainDiam:   {ml:'Main Dia (m)',     il:'Main Dia (ft)',      toI:v=>v*M_FT,       toM:v=>v/M_FT,        sm:0.05, si:0.1,   min:0},
-  mainAlt:    {ml:'Main Deploy Alt (m)',il:'Main Deploy Alt (ft)',toI:v=>v*M_FT,     toM:v=>v/M_FT,        sm:10,   si:25,    min:0},
-};
-
-const PRESETS = {
-  'KNSB':{propA:8.26,propN:0.319,propRho:1.841,propCstar:889,propGamma:1.133},
-  'KNSU':{propA:8.26,propN:0.319,propRho:1.889,propCstar:907,propGamma:1.133},
-  'KNDX':{propA:5.13,propN:0.22, propRho:1.879,propCstar:887,propGamma:1.131},
-};
-
-// ── Display value for a field ──
-function dispVal(key){
-  const f=FIELDS[key]; if(!f) return S[key];
-  const v = units==='imp' ? f.toI(S[key]) : S[key];
-  return parseFloat(v.toPrecision(6));
-}
-function fieldLabel(key){
-  const f=FIELDS[key]; return units==='imp' ? f.il : f.ml;
-}
-function fieldStep(key){
-  const f=FIELDS[key]; return units==='imp' ? f.si : f.sm;
-}
+// ── Tabs ──
+document.querySelectorAll('.tab').forEach(t=>{
+  t.addEventListener('click',()=>{
+    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(x=>x.classList.remove('active'));
+    t.classList.add('active');
+    document.getElementById('tab-'+t.dataset.tab).classList.add('active');
+    if(t.dataset.tab==='burn') drawBurnFrame();
+  });
+});
 
 // ── Sidebar ──
 function buildSidebar(){
   const sb=document.getElementById('sidebar');
   sb.innerHTML=`
-  ${sec('Grain Geometry','grain',`
-    <div class="row">
-      ${field('grainOD')} ${field('grainID')}
-    </div>
-    <div class="row">
-      ${field('grainLen')} ${field('grainCount')}
-    </div>
-  `,true)}
-  ${sec('Propellant','prop',`
-    <div class="preset-row" id="presets"></div>
-    <div class="row">
-      ${field('propA')} ${field('propN')}
-    </div>
-    <div class="row">
-      ${field('propRho')} ${field('propCstar')}
-    </div>
-    ${field('propGamma')}
-  `,true)}
-  ${sec('Nozzle','nozzle',`
-    <div class="row">
-      ${field('nozThroat')} ${field('nozExit')}
-    </div>
-    <div class="row">
-      ${field('nozConvAngle')} ${field('nozDivAngle')}
-    </div>
-    <p style="font-size:.7em;color:var(--dim);margin-top:4px">Drag control points in the nozzle editor →</p>
-  `,true)}
-  ${sec('Rocket','rocket',`
-    <div class="row">
-      ${field('rktMass')} ${field('rktDiam')}
-    </div>
-    ${field('rktCd')}
-  `,true)}
-  ${sec('Recovery (2-Stage)','recovery',`
-    <div class="row">
-      ${field('drogueCd')} ${field('drogueDiam')}
-    </div>
-    <div class="row">
-      ${field('mainCd')} ${field('mainDiam')}
-    </div>
-    ${field('mainAlt')}
-  `,true)}
-  <button class="btn" onclick="calculate()">Calculate</button>
-  `;
-  // Wire inputs
+  ${sec('Grain Geometry','grain',`<div class="row">${field('grainOD')}${field('grainID')}</div><div class="row">${field('grainLen')}${field('grainCount')}</div>`,true)}
+  ${sec('Propellant','prop',`<div class="preset-row" id="presets"></div><div class="row">${field('propA')}${field('propN')}</div><div class="row">${field('propRho')}${field('propCstar')}</div>${field('propGamma')}`,true)}
+  ${sec('Nozzle','nozzle',`<div class="row">${field('nozThroat')}${field('nozExit')}</div><div class="row">${field('nozConvAngle')}${field('nozDivAngle')}</div><p style="font-size:.7em;color:var(--dim);margin-top:4px">Drag control points in the nozzle editor →</p>`,true)}
+  ${sec('Rocket','rocket',`<div class="row">${field('rktMass')}${field('rktDiam')}</div>${field('rktCd')}`,true)}
+  ${sec('Recovery (2-Stage)','recovery',`<div class="row">${field('drogueCd')}${field('drogueDiam')}</div><div class="row">${field('mainCd')}${field('mainDiam')}</div>${field('mainAlt')}`,true)}
+  <button class="btn" onclick="calculate()">Calculate</button>`;
   sb.querySelectorAll('input').forEach(el=>{
-    const k=el.dataset.key;
-    el.value=dispVal(k);
-    el.step=fieldStep(k);
+    const k=el.dataset.key;el.value=dispVal(k);el.step=fieldStep(k);
     el.addEventListener('input',()=>{
       const raw=parseFloat(el.value)||0;
-      const f=FIELDS[k];
-      S[k] = units==='imp' ? f.toM(raw) : raw;
+      S[k]=units==='imp'?FIELDS[k].toM(raw):raw;
       if(['nozThroat','nozExit','nozConvAngle','nozDivAngle'].includes(k)) drawNozzle();
     });
   });
-  // Presets
   const pr=document.getElementById('presets');
   Object.keys(PRESETS).forEach(k=>{
-    const b=document.createElement('button');
-    b.className='preset-btn'; b.textContent=k;
-    b.onclick=()=>{
-      Object.assign(S,PRESETS[k]);
-      refreshInputs();
-      pr.querySelectorAll('.preset-btn').forEach(x=>x.classList.remove('active'));
-      b.classList.add('active');
-    };
+    const b=document.createElement('button');b.className='preset-btn';b.textContent=k;
+    b.onclick=()=>{Object.assign(S,PRESETS[k]);refreshInputs();pr.querySelectorAll('.preset-btn').forEach(x=>x.classList.remove('active'));b.classList.add('active');};
     pr.appendChild(b);
   });
-  // Accordion
-  sb.querySelectorAll('.sec-head').forEach(h=>{
-    h.addEventListener('click',()=>{
-      h.classList.toggle('open');
-      h.nextElementSibling.classList.toggle('open');
-    });
-  });
+  sb.querySelectorAll('.sec-head').forEach(h=>h.addEventListener('click',()=>{h.classList.toggle('open');h.nextElementSibling.classList.toggle('open');}));
 }
-
 function refreshInputs(){
-  document.querySelectorAll('#sidebar input[data-key]').forEach(el=>{
-    const k=el.dataset.key;
-    el.value=dispVal(k);
-    el.step=fieldStep(k);
-  });
-  document.querySelectorAll('#sidebar .field label[data-key]').forEach(lbl=>{
-    lbl.textContent=fieldLabel(lbl.dataset.key);
-  });
+  document.querySelectorAll('#sidebar input[data-key]').forEach(el=>{el.value=dispVal(el.dataset.key);el.step=fieldStep(el.dataset.key);});
+  document.querySelectorAll('#sidebar .field label[data-key]').forEach(l=>{l.textContent=fieldLabel(l.dataset.key);});
 }
+function sec(t,id,body,open){return `<div class="section"><div class="sec-head ${open?'open':''}" id="sh_${id}"><span>${t}</span><span class="arrow">&#9654;</span></div><div class="sec-body ${open?'open':''}">${body}</div></div>`;}
+function field(k){return `<div class="field"><label data-key="${k}">${fieldLabel(k)}</label><input type="number" data-key="${k}" step="${fieldStep(k)}" min="${FIELDS[k].min}"></div>`;}
 
-function sec(title,id,body,open){
-  return `<div class="section"><div class="sec-head ${open?'open':''}" id="sh_${id}"><span>${title}</span><span class="arrow">&#9654;</span></div><div class="sec-body ${open?'open':''}">${body}</div></div>`;
-}
-function field(key){
-  return `<div class="field"><label data-key="${key}">${fieldLabel(key)}</label><input type="number" data-key="${key}" step="${fieldStep(key)}" min="${FIELDS[key].min}"></div>`;
-}
-
-// ── Unit Toggle ──
 document.getElementById('unitToggle').addEventListener('click',e=>{
-  const u=e.target.dataset.u;
-  if(!u||u===units) return;
-  units=u;
+  const u=e.target.dataset.u;if(!u||u===units)return;units=u;
   document.querySelectorAll('#unitToggle span').forEach(s=>s.classList.toggle('active',s.dataset.u===u));
-  refreshInputs();
-  drawNozzle();
-  calculate();
+  refreshInputs();drawNozzle();calculate();
 });
 
-// ── Main ──
-function buildMain(){
-  document.getElementById('main').innerHTML=`
-    <div class="nozzle-wrap">
-      <h3>De Laval Nozzle Cross-Section <span style="color:var(--accent);font-weight:400">(drag points to edit)</span></h3>
-      <div class="nozzle-hint">Orange points: throat &amp; exit radius. Drag vertically to resize.</div>
-      <svg id="nozSvg" viewBox="0 0 520 220" style="max-height:220px;width:100%"></svg>
-    </div>
+// ── Analysis Tab ──
+function buildAnalysis(){
+  document.getElementById('tab-analysis').innerHTML=`
+    <div class="nozzle-wrap"><h3>De Laval Nozzle Cross-Section <span style="color:var(--accent);font-weight:400">(drag points to edit)</span></h3>
+    <div class="nozzle-hint">Orange points: throat &amp; exit radius. Drag vertically to resize.</div>
+    <svg id="nozSvg" viewBox="0 0 520 220" style="max-height:220px;width:100%"></svg></div>
     <div class="results-bar" id="results"></div>
-    <div class="charts">
-      <div class="chart-box"><h3 id="thrustLabel">Thrust Curve</h3><canvas id="thrustChart" height="220"></canvas></div>
-      <div class="chart-box"><h3 id="flightLabel">Flight Profile</h3><canvas id="flightChart" height="220"></canvas></div>
-    </div>
-    <div class="flight-events" id="events"><h3>Flight Events</h3><div id="evtList"></div></div>
-  `;
+    <div class="charts"><div class="chart-box"><h3>Thrust Curve</h3><canvas id="thrustChart" height="220"></canvas></div>
+    <div class="chart-box"><h3>Flight Profile</h3><canvas id="flightChart" height="220"></canvas></div></div>
+    <div class="flight-events" id="events"><h3>Flight Events</h3><div id="evtList"></div></div>`;
   drawNozzle();
+}
+
+// ── Burn Animation Tab ──
+function buildBurnTab(){
+  document.getElementById('tab-burn').innerHTML=`
+    <div class="burn-container">
+      <h3>BATES Grain Burn Cross-Section</h3>
+      <div class="burn-canvas-wrap"><canvas id="burnCanvas"></canvas></div>
+      <div class="burn-controls">
+        <button id="burnPlay" title="Play/Pause">&#9654;</button>
+        <button id="burnReset" title="Reset">&#9632;</button>
+        <div class="speed-btns">
+          <button data-speed="0.25">¼×</button>
+          <button data-speed="0.5">½×</button>
+          <button data-speed="1" class="active">1×</button>
+          <button data-speed="2">2×</button>
+        </div>
+        <input type="range" class="burn-slider" id="burnSlider" min="0" max="1000" value="0">
+        <span class="burn-time" id="burnTimeLabel">0.00s</span>
+      </div>
+      <div class="burn-stats" id="burnStats"></div>
+    </div>`;
+  // Wire controls
+  document.getElementById('burnPlay').addEventListener('click',toggleBurnPlay);
+  document.getElementById('burnReset').addEventListener('click',resetBurn);
+  document.getElementById('burnSlider').addEventListener('input',e=>{
+    burnT=burnSimData.length?(e.target.value/1000)*burnSimData[burnSimData.length-1].t:0;
+    drawBurnFrame();
+  });
+  document.querySelectorAll('.speed-btns button').forEach(b=>b.addEventListener('click',()=>{
+    burnSpeed=parseFloat(b.dataset.speed);
+    document.querySelectorAll('.speed-btns button').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+  }));
+}
+
+// ── Burn sim data ──
+let burnSimData=[], burnT=0, burnPlaying=false, burnAnim=null, burnSpeed=1, burnLastTime=0;
+
+function runBurnSim(){
+  burnSimData=[];
+  const dt=0.002;
+  const Ro=S.grainOD/2, Ri0=S.grainID/2, Lg0=S.grainLen, N=S.grainCount;
+  const rho=S.propRho*1000; // kg/m³
+  const a=S.propA/1000, n=S.propN, cstar=S.propCstar;
+  const At=Math.PI*(S.nozThroat/2/1000)**2;
+  let ri=Ri0, lg=Lg0, time=0, iter=0;
+  // Store in mm for easy drawing
+  while(ri<Ro && lg>0 && iter<20000){
+    iter++;
+    const riM=ri/1000, RoM=Ro/1000, lgM=lg/1000;
+    const Ab=N*(2*Math.PI*riM*lgM+2*Math.PI*(RoM**2-riM**2));
+    const Kn=Ab/At;
+    const Pc=Math.pow(rho*a*cstar*Kn/Math.pow(1e6,n),1/(1-n));
+    if(!isFinite(Pc)||Pc<0) break;
+    const rBurn=a*Math.pow(Pc/1e6,n)*1000; // mm/s
+    const F=findCf(S.propGamma,At,Math.PI*(S.nozExit/2/1000)**2)*Pc*At;
+    burnSimData.push({t:time,ri,lg,od:Ro*2,F,Pc:Pc/1e6,Kn});
+    ri+=rBurn*dt;
+    lg-=2*rBurn*dt;
+    time+=dt;
+  }
+  // Final frame
+  burnSimData.push({t:time,ri:Math.min(ri,Ro),lg:Math.max(lg,0),od:Ro*2,F:0,Pc:0,Kn:0});
+}
+
+function findCf(gam,At,Ae){
+  const eps=Ae/At,gp1=gam+1,gm1=gam-1;
+  let M=2;
+  for(let i=0;i<50;i++){const t=1+(gam-1)/2*M*M;const ec=(1/M)*Math.pow(2/(gam+1)*t,(gam+1)/(2*(gam-1)));if(Math.abs(ec-eps)<1e-6)break;M+=(eps>ec)?.05:-.02;M=Math.max(1.01,M);}
+  const pe_pc=Math.pow(1+(gam-1)/2*M*M,-gam/(gam-1));
+  return Math.sqrt(2*gam*gam/gm1*(2/gp1)**(gp1/gm1)*(1-pe_pc**(gm1/gam)))+eps*pe_pc;
+}
+
+function getFrameAt(t){
+  if(!burnSimData.length) return null;
+  if(t<=0) return burnSimData[0];
+  if(t>=burnSimData[burnSimData.length-1].t) return burnSimData[burnSimData.length-1];
+  // Binary search
+  let lo=0,hi=burnSimData.length-1;
+  while(lo<hi-1){const mid=(lo+hi)>>1;burnSimData[mid].t<=t?lo=mid:hi=mid;}
+  const a=burnSimData[lo],b=burnSimData[hi];
+  const frac=(t-a.t)/(b.t-a.t);
+  return {t,ri:a.ri+(b.ri-a.ri)*frac,lg:a.lg+(b.lg-a.lg)*frac,od:a.od,F:a.F+(b.F-a.F)*frac,Pc:a.Pc+(b.Pc-a.Pc)*frac,Kn:a.Kn+(b.Kn-a.Kn)*frac};
+}
+
+function drawBurnFrame(){
+  const canvas=document.getElementById('burnCanvas');
+  if(!canvas) return;
+  if(!burnSimData.length) runBurnSim();
+  const frame=getFrameAt(burnT);
+  if(!frame) return;
+
+  const dpr=window.devicePixelRatio||1;
+  const rect=canvas.parentElement.getBoundingClientRect();
+  canvas.width=rect.width*dpr;canvas.height=rect.height*dpr;
+  const ctx=canvas.getContext('2d');
+  ctx.scale(dpr,dpr);
+  const W=rect.width,H=rect.height;
+  ctx.clearRect(0,0,W,H);
+
+  const N=S.grainCount;
+  const od=frame.od, ri=frame.ri, lg=frame.lg;
+  const origLen=S.grainLen; // original grain length for fixed layout
+  const maxDim=Math.max(od,origLen*N+10*(N-1));
+  const scale=Math.min((W-120)/maxDim, (H-80)/(od+30));
+  const cx=W/2, cy=H/2;
+
+  // Casing (fixed to original dims)
+  const grainSpacing=6*scale;
+  const casingW=(origLen*N+6*(N-1)+20)*scale;
+  const casingH=(od+8)*scale;
+  const casingX=cx-casingW/2, casingY=cy-casingH/2;
+  ctx.fillStyle='#2a2e38';ctx.strokeStyle='#555';ctx.lineWidth=2;
+  roundRect(ctx,casingX,casingY,casingW,casingH,6);
+
+  // Grains (positioned by original length, propellant anchored to nozzle end of each slot)
+  const totalSlotW=N*origLen*scale+(N-1)*grainSpacing;
+  let slotX=cx-totalSlotW/2;
+
+  for(let i=0;i<N;i++){
+    const slotW=origLen*scale; // fixed slot size
+    const gw=lg*scale;         // current burned grain width
+    const faceRegress=(origLen-lg)/2*scale; // how much each face has receded
+    // Anchor grain toward nozzle (right side): leave gap on forward (left) side
+    const gx=slotX+slotW-gw-faceRegress;
+    const gh=od*scale;
+    const gy=cy-gh/2;
+    const coreH=ri*2*scale;
+
+    // Propellant
+    const grad=ctx.createLinearGradient(gx,gy,gx,gy+gh);
+    grad.addColorStop(0,'#6b5b3a');grad.addColorStop(0.3,'#8a7550');grad.addColorStop(0.7,'#8a7550');grad.addColorStop(1,'#6b5b3a');
+    ctx.fillStyle=grad;
+    ctx.fillRect(gx,gy,gw,gh);
+
+    // Core bore (hollow center)
+    const coreGrad=ctx.createRadialGradient(gx+gw/2,cy,coreH*0.2,gx+gw/2,cy,coreH*0.6);
+    coreGrad.addColorStop(0,'#f74f4f');coreGrad.addColorStop(0.4,'#f7954f');coreGrad.addColorStop(1,'#1a1d23');
+    ctx.fillStyle=coreGrad;
+    ctx.fillRect(gx,cy-coreH/2,gw,coreH);
+
+    // Burn surface indicators — glowing edges
+    // Inner core walls
+    ctx.shadowColor='#f74f4f';ctx.shadowBlur=8;
+    ctx.strokeStyle='#ff6644';ctx.lineWidth=2;
+    ctx.beginPath();ctx.moveTo(gx,cy-coreH/2);ctx.lineTo(gx+gw,cy-coreH/2);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(gx,cy+coreH/2);ctx.lineTo(gx+gw,cy+coreH/2);ctx.stroke();
+    // Exposed faces
+    ctx.beginPath();ctx.moveTo(gx,cy-coreH/2);ctx.lineTo(gx,cy-gh/2);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(gx,cy+coreH/2);ctx.lineTo(gx,cy+gh/2);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(gx+gw,cy-coreH/2);ctx.lineTo(gx+gw,cy-gh/2);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(gx+gw,cy+coreH/2);ctx.lineTo(gx+gw,cy+gh/2);ctx.stroke();
+    ctx.shadowBlur=0;
+
+    // Grain outline
+    ctx.strokeStyle='#999';ctx.lineWidth=1;ctx.strokeRect(gx,gy,gw,gh);
+
+    // Dimension annotations
+    if(i===0){
+      const imp=units==='imp';
+      // Core dia
+      ctx.strokeStyle='var(--accent)';ctx.lineWidth=1;ctx.setLineDash([3,3]);
+      const dimX=gx-16;
+      ctx.beginPath();ctx.moveTo(dimX,cy-coreH/2);ctx.lineTo(dimX,cy+coreH/2);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(dimX-4,cy-coreH/2);ctx.lineTo(dimX+4,cy-coreH/2);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(dimX-4,cy+coreH/2);ctx.lineTo(dimX+4,cy+coreH/2);ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle='#4f9cf7';ctx.font='bold 11px system-ui';ctx.textAlign='center';
+      ctx.save();ctx.translate(dimX-12,cy);ctx.rotate(-Math.PI/2);
+      const coreStr=imp?((ri*2/MM_IN).toFixed(3)+'"'):((ri*2).toFixed(1)+'mm');
+      ctx.fillText('Core: '+coreStr,0,0);ctx.restore();
+
+      // OD
+      const dimX2=gx-42;
+      ctx.strokeStyle='var(--accent2)';ctx.setLineDash([3,3]);
+      ctx.beginPath();ctx.moveTo(dimX2,cy-gh/2);ctx.lineTo(dimX2,cy+gh/2);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(dimX2-4,cy-gh/2);ctx.lineTo(dimX2+4,cy-gh/2);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(dimX2-4,cy+gh/2);ctx.lineTo(dimX2+4,cy+gh/2);ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle='#f7954f';ctx.font='bold 11px system-ui';
+      ctx.save();ctx.translate(dimX2-12,cy);ctx.rotate(-Math.PI/2);
+      const odStr=imp?((od/MM_IN).toFixed(3)+'"'):((od).toFixed(1)+'mm');
+      ctx.fillText('OD: '+odStr,0,0);ctx.restore();
+
+      // Length
+      const dimY=cy+gh/2+18;
+      ctx.strokeStyle='var(--accent3)';ctx.setLineDash([3,3]);
+      ctx.beginPath();ctx.moveTo(gx,dimY);ctx.lineTo(gx+gw,dimY);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(gx,dimY-4);ctx.lineTo(gx,dimY+4);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(gx+gw,dimY-4);ctx.lineTo(gx+gw,dimY+4);ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle='#4ff78a';ctx.font='bold 11px system-ui';ctx.textAlign='center';
+      const lgStr=imp?((lg/MM_IN).toFixed(3)+'"'):((lg).toFixed(1)+'mm');
+      ctx.fillText('Len: '+lgStr,gx+gw/2,dimY+14);
+    }
+
+    slotX+=slotW+grainSpacing;
+  }
+
+  // Nozzle hint at right
+  const nozX=cx+totalSlotW/2+20;
+  ctx.fillStyle='#2a2e38';ctx.strokeStyle='#555';ctx.lineWidth=1.5;
+  const nozTh=S.nozThroat/od*od*scale*0.5;
+  const nozH=od*scale*0.6;
+  ctx.beginPath();
+  ctx.moveTo(nozX,cy-nozH/2);ctx.lineTo(nozX+20,cy-nozTh/2);ctx.lineTo(nozX+40,cy-nozH*0.4);
+  ctx.lineTo(nozX+40,cy+nozH*0.4);ctx.lineTo(nozX+20,cy+nozTh/2);ctx.lineTo(nozX,cy+nozH/2);
+  ctx.closePath();ctx.fill();ctx.stroke();
+  ctx.fillStyle='#14161a';
+  ctx.beginPath();
+  ctx.moveTo(nozX,cy-nozH/2+4);ctx.lineTo(nozX+20,cy-nozTh/2+2);ctx.lineTo(nozX+40,cy-nozH*0.4+4);
+  ctx.lineTo(nozX+40,cy+nozH*0.4-4);ctx.lineTo(nozX+20,cy+nozTh/2-2);ctx.lineTo(nozX,cy+nozH/2-4);
+  ctx.closePath();ctx.fill();
+  ctx.fillStyle='#666';ctx.font='10px system-ui';ctx.textAlign='center';
+  ctx.fillText('Nozzle',nozX+20,cy+nozH/2+16);
+
+  // Progress bar on thrust mini-graph
+  const mgX=20,mgY=14,mgW=100,mgH=36;
+  ctx.fillStyle='rgba(0,0,0,0.4)';roundRect(ctx,mgX,mgY,mgW,mgH,4);
+  ctx.fillStyle='#666';ctx.font='9px system-ui';ctx.textAlign='left';
+  ctx.fillText('Thrust',mgX+4,mgY+10);
+  // Mini thrust curve
+  if(burnSimData.length>1){
+    const maxF=Math.max(...burnSimData.map(d=>d.F),1);
+    ctx.strokeStyle='#4f9cf7';ctx.lineWidth=1.5;ctx.beginPath();
+    burnSimData.forEach((d,i)=>{
+      if(i%8!==0&&i!==burnSimData.length-1)return;
+      const px=mgX+4+(d.t/burnSimData[burnSimData.length-1].t)*(mgW-8);
+      const py=mgY+mgH-4-(d.F/maxF)*(mgH-16);
+      i===0?ctx.moveTo(px,py):ctx.lineTo(px,py);
+    });
+    ctx.stroke();
+    // Current time marker
+    const tMax=burnSimData[burnSimData.length-1].t;
+    const mx=mgX+4+(burnT/tMax)*(mgW-8);
+    ctx.strokeStyle='#fff';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(mx,mgY+10);ctx.lineTo(mx,mgY+mgH-4);ctx.stroke();
+  }
+
+  // Update slider & label
+  const slider=document.getElementById('burnSlider');
+  const label=document.getElementById('burnTimeLabel');
+  if(slider&&!burnPlaying){
+    const tMax=burnSimData.length?burnSimData[burnSimData.length-1].t:1;
+    slider.value=Math.round((burnT/tMax)*1000);
+  }
+  if(label) label.textContent=burnT.toFixed(2)+'s';
+
+  // Stats
+  const imp=units==='imp';
+  const fN=imp?v=>v/N_LBF:v=>v;
+  const tU=imp?'lbf':'N';
+  const pU=imp?'psi':'MPa';
+  const pV=imp?frame.Pc*145.038:frame.Pc;
+  const fmt=(v,d=1)=>v.toFixed(d).replace(/\B(?=(\d{3})+(?!\d))/g,',');
+  const stats=document.getElementById('burnStats');
+  if(stats) stats.innerHTML=`
+    <div class="burn-stat"><div class="bval">${fmt(fN(frame.F),1)} ${tU}</div><div class="blbl">Thrust</div></div>
+    <div class="burn-stat"><div class="bval">${fmt(pV,1)} ${pU}</div><div class="blbl">Chamber Pressure</div></div>
+    <div class="burn-stat"><div class="bval">${fmt(frame.Kn,0)}</div><div class="blbl">Kn</div></div>
+    <div class="burn-stat"><div class="bval">${fmt(frame.ri*2/(imp?MM_IN:1),imp?3:1)} ${imp?'in':'mm'}</div><div class="blbl">Core Dia</div></div>
+    <div class="burn-stat"><div class="bval">${fmt(frame.lg/(imp?MM_IN:1),imp?3:1)} ${imp?'in':'mm'}</div><div class="blbl">Grain Length</div></div>
+  `;
+}
+
+function roundRect(ctx,x,y,w,h,r){
+  ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r);
+  ctx.lineTo(x+w,y+h-r);ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);ctx.lineTo(x+r,y+h);
+  ctx.quadraticCurveTo(x,y+h,x,y+h-r);ctx.lineTo(x,y+r);ctx.quadraticCurveTo(x,y,x+r,y);
+  ctx.closePath();ctx.fill();ctx.stroke();
+}
+
+function toggleBurnPlay(){
+  burnPlaying=!burnPlaying;
+  const btn=document.getElementById('burnPlay');
+  btn.innerHTML=burnPlaying?'&#10074;&#10074;':'&#9654;';
+  btn.classList.toggle('active',burnPlaying);
+  if(burnPlaying){
+    if(!burnSimData.length) runBurnSim();
+    const tMax=burnSimData[burnSimData.length-1].t;
+    if(burnT>=tMax) burnT=0;
+    burnLastTime=performance.now();
+    burnAnim=requestAnimationFrame(burnLoop);
+  } else {
+    if(burnAnim) cancelAnimationFrame(burnAnim);
+  }
+}
+function resetBurn(){
+  burnPlaying=false;burnT=0;
+  const btn=document.getElementById('burnPlay');
+  if(btn){btn.innerHTML='&#9654;';btn.classList.remove('active');}
+  if(burnAnim) cancelAnimationFrame(burnAnim);
+  drawBurnFrame();
+}
+function burnLoop(ts){
+  if(!burnPlaying) return;
+  const dt=(ts-burnLastTime)/1000*burnSpeed;
+  burnLastTime=ts;
+  burnT+=dt;
+  const tMax=burnSimData.length?burnSimData[burnSimData.length-1].t:1;
+  if(burnT>=tMax){
+    burnT=tMax;burnPlaying=false;
+    const btn=document.getElementById('burnPlay');
+    if(btn){btn.innerHTML='&#9654;';btn.classList.remove('active');}
+  }
+  const slider=document.getElementById('burnSlider');
+  if(slider) slider.value=Math.round((burnT/tMax)*1000);
+  drawBurnFrame();
+  if(burnPlaying) burnAnim=requestAnimationFrame(burnLoop);
 }
 
 // ── Nozzle SVG ──
 let dragging=null;
 function drawNozzle(){
-  const svg=document.getElementById('nozSvg');
-  if(!svg) return;
-  const cy=110;
-  const tR=S.nozThroat/2, eR=S.nozExit/2;
+  const svg=document.getElementById('nozSvg');if(!svg)return;
+  const cy=110,tR=S.nozThroat/2,eR=S.nozExit/2;
   const scale=Math.min(3,80/Math.max(tR,eR,1));
-  const iRs=Math.max(tR*scale+8, S.grainOD/2*Math.min(scale,80/(S.grainOD/2||1))*0.7);
-  const tRs=tR*scale, eRs=eR*scale;
-  const xI=120, xT=260, xE=420;
-  const dTh = units==='imp'?(S.nozThroat/MM_IN).toFixed(3)+'"':S.nozThroat.toFixed(1)+'mm';
-  const dEx = units==='imp'?(S.nozExit/MM_IN).toFixed(3)+'"':S.nozExit.toFixed(1)+'mm';
-  const eps=((eR*eR)/(tR*tR)).toFixed(2);
-  svg.innerHTML=`
-    <defs>
-      <linearGradient id="ng" x1="0" y1="0" x2="1" y2="0">
-        <stop offset="0%" stop-color="#3a3f4a"/><stop offset="40%" stop-color="#2a2e38"/>
-        <stop offset="60%" stop-color="#2a2e38"/><stop offset="100%" stop-color="#3a3f4a"/>
-      </linearGradient>
-      <linearGradient id="flame" x1="0" y1="0" x2="1" y2="0">
-        <stop offset="0%" stop-color="#f74f4f" stop-opacity="0.6"/>
-        <stop offset="50%" stop-color="#f7954f" stop-opacity="0.3"/>
-        <stop offset="100%" stop-color="#f7d74f" stop-opacity="0"/>
-      </linearGradient>
-    </defs>
+  const iRs=Math.max(tR*scale+8,S.grainOD/2*Math.min(scale,80/(S.grainOD/2||1))*.7);
+  const tRs=tR*scale,eRs=eR*scale;
+  const xI=120,xT=260,xE=420;
+  const dTh=units==='imp'?(S.nozThroat/MM_IN).toFixed(3)+'"':S.nozThroat.toFixed(1)+'mm';
+  const dEx=units==='imp'?(S.nozExit/MM_IN).toFixed(3)+'"':S.nozExit.toFixed(1)+'mm';
+  svg.innerHTML=`<defs><linearGradient id="ng" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#3a3f4a"/><stop offset="40%" stop-color="#2a2e38"/><stop offset="60%" stop-color="#2a2e38"/><stop offset="100%" stop-color="#3a3f4a"/></linearGradient><linearGradient id="flame" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#f74f4f" stop-opacity="0.6"/><stop offset="50%" stop-color="#f7954f" stop-opacity="0.3"/><stop offset="100%" stop-color="#f7d74f" stop-opacity="0"/></linearGradient></defs>
     <line x1="60" y1="${cy}" x2="480" y2="${cy}" stroke="#444" stroke-width="1" stroke-dasharray="6,4"/>
     <text x="40" y="${cy+4}" fill="#555" font-size="10" text-anchor="middle">CL</text>
     <path d="M${xI},${cy-iRs} L${xT},${cy-tRs} L${xE},${cy-eRs} L${xE},${cy-eRs-10} L${xT},${cy-tRs-10} L${xI},${cy-iRs-10} Z" fill="url(#ng)" stroke="#555" stroke-width="1"/>
     <path d="M${xI},${cy+iRs} L${xT},${cy+tRs} L${xE},${cy+eRs} L${xE},${cy+eRs+10} L${xT},${cy+tRs+10} L${xI},${cy+iRs+10} Z" fill="url(#ng)" stroke="#555" stroke-width="1"/>
     <path d="M${xI},${cy-iRs} L${xT},${cy-tRs} L${xE},${cy-eRs} L${xE},${cy+eRs} L${xT},${cy+tRs} L${xI},${cy+iRs} Z" fill="#14161a"/>
-    <ellipse cx="${xE+50}" cy="${cy}" rx="50" ry="${eRs*0.8}" fill="url(#flame)"/>
+    <ellipse cx="${xE+50}" cy="${cy}" rx="50" ry="${eRs*.8}" fill="url(#flame)"/>
     <line x1="${xT}" y1="${cy-tRs}" x2="${xT}" y2="${cy+tRs}" stroke="var(--accent)" stroke-width="1" stroke-dasharray="3,3"/>
     <line x1="${xE}" y1="${cy-eRs}" x2="${xE}" y2="${cy+eRs}" stroke="var(--accent2)" stroke-width="1" stroke-dasharray="3,3"/>
     <text x="${xT}" y="18" fill="var(--accent)" font-size="11" text-anchor="middle">Throat: ${dTh}</text>
     <text x="${xE}" y="18" fill="var(--accent2)" font-size="11" text-anchor="middle">Exit: ${dEx}</text>
     <text x="${(xI+xT)/2}" y="${cy-Math.max(tRs,iRs)-18}" fill="var(--dim)" font-size="10" text-anchor="middle">Conv ${S.nozConvAngle.toFixed(0)}°</text>
     <text x="${(xT+xE)/2}" y="${cy-Math.max(tRs,eRs)-18}" fill="var(--dim)" font-size="10" text-anchor="middle">Div ${S.nozDivAngle.toFixed(0)}°</text>
-    <text x="${xE+10}" y="${cy+eRs+25}" fill="var(--dim)" font-size="10">ε = ${eps}</text>
+    <text x="${xE+10}" y="${cy+eRs+25}" fill="var(--dim)" font-size="10">ε = ${((eR*eR)/(tR*tR)).toFixed(2)}</text>
     <circle class="ctrl-pt" data-ctrl="throat" cx="${xT}" cy="${cy-tRs}" r="5" fill="var(--accent)" stroke="#fff" stroke-width="1.5"/>
-    <circle class="ctrl-pt" data-ctrl="exit" cx="${xE}" cy="${cy-eRs}" r="5" fill="var(--accent2)" stroke="#fff" stroke-width="1.5"/>
-  `;
+    <circle class="ctrl-pt" data-ctrl="exit" cx="${xE}" cy="${cy-eRs}" r="5" fill="var(--accent2)" stroke="#fff" stroke-width="1.5"/>`;
   svg.querySelectorAll('.ctrl-pt').forEach(pt=>{
     pt.addEventListener('mousedown',e=>{e.preventDefault();dragging=pt.dataset.ctrl;});
     pt.addEventListener('touchstart',e=>{e.preventDefault();dragging=pt.dataset.ctrl;},{passive:false});
   });
 }
-function nozzleDrag(clientY){
-  const svg=document.getElementById('nozSvg');
-  const rect=svg.getBoundingClientRect();
-  const svgY=(clientY-rect.top)/rect.height*220, cy=110;
-  const scale=Math.min(3,80/Math.max(S.nozThroat/2,S.nozExit/2,1));
+function nozzleDrag(cY){
+  const svg=document.getElementById('nozSvg'),rect=svg.getBoundingClientRect();
+  const svgY=(cY-rect.top)/rect.height*220,cy=110,scale=Math.min(3,80/Math.max(S.nozThroat/2,S.nozExit/2,1));
   const dist=Math.max(2,(cy-svgY)/scale);
   if(dragging==='throat'){S.nozThroat=Math.max(2,Math.min(S.nozExit-1,dist*2));syncInput('nozThroat');}
   else if(dragging==='exit'){S.nozExit=Math.max(S.nozThroat+1,dist*2);syncInput('nozExit');}
   drawNozzle();
 }
-function syncInput(key){
-  const el=document.querySelector(`input[data-key="${key}"]`);
-  if(el) el.value=dispVal(key);
-}
+function syncInput(k){const el=document.querySelector(`input[data-key="${k}"]`);if(el)el.value=dispVal(k);}
 document.addEventListener('mousemove',e=>{if(dragging)nozzleDrag(e.clientY);});
 document.addEventListener('mouseup',()=>{dragging=null;});
 document.addEventListener('touchmove',e=>{if(dragging)nozzleDrag(e.touches[0].clientY);},{passive:false});
 document.addEventListener('touchend',()=>{dragging=null;});
 
-// ── Engine Simulation (always metric internally) ──
+// ── Engine Simulation ──
 function calculate(){
-  const dt=0.002, g=9.81;
-  const Ro=S.grainOD/2/1000, Ri0=S.grainID/2/1000, Lg0=S.grainLen/1000;
-  const N=S.grainCount;
-  const rho=S.propRho*1e6/1e3; // g/cm³ → kg/m³
-  const a=S.propA/1000, n=S.propN, cstar=S.propCstar, gam=S.propGamma;
-  const At=Math.PI*(S.nozThroat/2/1000)**2;
-  const Ae=Math.PI*(S.nozExit/2/1000)**2;
-  const eps=Ae/At;
-  const gp1=gam+1, gm1=gam-1;
-  const pe_pc=findExitPressureRatio(gam,eps);
-  const Cf0=Math.sqrt(2*gam*gam/gm1*(2/gp1)**(gp1/gm1)*(1-pe_pc**(gm1/gam)))+eps*pe_pc;
-  let ri=Ri0, lg=Lg0, time=0, thrustData=[], totalImpulse=0, maxThrust=0;
-  const propMass0=N*(S.propRho*1000)*Math.PI*(Ro**2-Ri0**2)*Lg0;
-  let propMass=propMass0, iter=0;
-  while(ri<Ro && lg>0 && iter<20000){
+  const dt=0.002,g=9.81;
+  const Ro=S.grainOD/2/1000,Ri0=S.grainID/2/1000,Lg0=S.grainLen/1000,N=S.grainCount;
+  const rho=S.propRho*1000,a=S.propA/1000,n=S.propN,cstar=S.propCstar,gam=S.propGamma;
+  const At=Math.PI*(S.nozThroat/2/1000)**2,Ae=Math.PI*(S.nozExit/2/1000)**2;
+  const Cf0=findCf(gam,At,Ae);
+  let ri=Ri0,lg=Lg0,time=0,thrustData=[],totalImpulse=0,maxThrust=0,iter=0;
+  const propMass0=N*rho*Math.PI*(Ro**2-Ri0**2)*Lg0;
+  while(ri<Ro&&lg>0&&iter<20000){
     iter++;
     const Ab=N*(2*Math.PI*ri*lg+2*Math.PI*(Ro**2-ri**2));
     const Kn=Ab/At;
     const Pc=Math.pow(rho*a*cstar*Kn/Math.pow(1e6,n),1/(1-n));
     if(!isFinite(Pc)||Pc<0) break;
-    const F=Cf0*Pc*At;
-    const rBurn=a*Math.pow(Pc/1e6,n);
+    const F=Cf0*Pc*At,rBurn=a*Math.pow(Pc/1e6,n);
     thrustData.push({t:time,F,Pc:Pc/1e6});
-    totalImpulse+=F*dt;
-    if(F>maxThrust) maxThrust=F;
-    ri+=rBurn*dt; lg-=2*rBurn*dt;
-    propMass=N*(S.propRho*1000)*Math.PI*Math.max(0,Ro**2-ri**2)*Math.max(0,lg);
-    time+=dt;
+    totalImpulse+=F*dt;if(F>maxThrust)maxThrust=F;
+    ri+=rBurn*dt;lg-=2*rBurn*dt;time+=dt;
   }
-  const burnTime=time, avgThrust=burnTime>0?totalImpulse/burnTime:0;
-  const cls=motorClass(totalImpulse);
-
-  // Flight sim
-  const mDry=S.rktMass, Aref=Math.PI*(S.rktDiam/2/1000)**2, Cd=S.rktCd;
-  const drogueA=Math.PI*(S.drogueDiam/2)**2, mainA=Math.PI*(S.mainDiam/2)**2;
+  const burnTime=time,avgThrust=burnTime>0?totalImpulse/burnTime:0,cls=motorClass(totalImpulse);
+  // Flight
+  const mDry=S.rktMass,Aref=Math.PI*(S.rktDiam/2/1000)**2,Cd=S.rktCd;
+  const drogueA=Math.PI*(S.drogueDiam/2)**2,mainA=Math.PI*(S.mainDiam/2)**2;
   let v=0,alt=0,ft=0,flightData=[],events=[];
   let phase='thrust',thrIdx=0,apogee=0,mainDeployed=false,drogueDeployed=false,landed=false;
-  let mCur=mDry+propMass0;
-  const fdt=0.01;
+  let mCur=mDry+propMass0;const fdt=0.01;
   for(ft=0;ft<600&&!landed;ft+=fdt){
     let thrust=0;
     if(phase==='thrust'){
       thrIdx=Math.min(thrustData.length-1,Math.round(ft/dt));
-      if(thrIdx<thrustData.length) thrust=thrustData[thrIdx].F;
+      if(thrIdx<thrustData.length)thrust=thrustData[thrIdx].F;
       mCur=mDry+propMass0*(1-thrIdx/Math.max(1,thrustData.length-1));
       if(ft>=burnTime){phase='coast';events.push({t:ft,alt,name:'Burnout',color:'var(--accent2)'});}
     }
     const rhoAir=1.225*Math.exp(-alt/8500);
-    let dragF;
-    if(!drogueDeployed) dragF=0.5*rhoAir*v*Math.abs(v)*Cd*Aref;
-    else if(!mainDeployed) dragF=0.5*rhoAir*v*Math.abs(v)*S.drogueCd*drogueA;
-    else dragF=0.5*rhoAir*v*Math.abs(v)*S.mainCd*mainA;
-    v+=(thrust-dragF-mCur*g)/mCur*fdt;
-    alt+=v*fdt;
+    let dragF=!drogueDeployed?.5*rhoAir*v*Math.abs(v)*Cd*Aref:!mainDeployed?.5*rhoAir*v*Math.abs(v)*S.drogueCd*drogueA:.5*rhoAir*v*Math.abs(v)*S.mainCd*mainA;
+    v+=(thrust-dragF-mCur*g)/mCur*fdt;alt+=v*fdt;
     if(phase==='coast'&&v<=0&&!drogueDeployed){drogueDeployed=true;apogee=alt;events.push({t:ft,alt,name:'Apogee — Drogue Deploy',color:'var(--accent3)'});}
-    if(drogueDeployed&&!mainDeployed&&alt<=S.mainAlt){mainDeployed=true;events.push({t:ft,alt,name:`Main Deploy`,color:'var(--warn)'});}
+    if(drogueDeployed&&!mainDeployed&&alt<=S.mainAlt){mainDeployed=true;events.push({t:ft,alt,name:'Main Deploy',color:'var(--warn)'});}
     if(alt<=0&&ft>burnTime){alt=0;landed=true;events.push({t:ft,alt:0,name:'Landing',color:'var(--dim)'});}
-    if(Math.round(ft*100)%5===0) flightData.push({t:ft,alt:Math.max(0,alt),v});
+    if(Math.round(ft*100)%5===0)flightData.push({t:ft,alt:Math.max(0,alt),v});
   }
   events.unshift({t:0,alt:0,name:'Ignition',color:'var(--red)'});
 
-  // ── Render Results (unit-aware) ──
   const imp=units==='imp';
-  const fN=imp?v=>(v/N_LBF):v=>v;
-  const fNs=imp?v=>(v/N_LBF):v=>v;
-  const fM=imp?v=>(v*KG_LB):v=>v;
-  const fAlt=imp?v=>(v*M_FT):v=>v;
-  const tU=imp?'lbf':'N', iU=imp?'lbf·s':'Ns', mU=imp?'lb':'kg', aU=imp?'ft':'m';
-
+  const fN=imp?v=>v/N_LBF:v=>v,fNs=fN,fM=imp?v=>v*KG_LB:v=>v,fAlt=imp?v=>v*M_FT:v=>v;
+  const tU=imp?'lbf':'N',iU=imp?'lbf·s':'Ns',mU=imp?'lb':'kg',aU=imp?'ft':'m';
   const fmt=(v,d=1)=>v.toFixed(d).replace(/\B(?=(\d{3})+(?!\d))/g,',');
   const res=document.getElementById('results');
   res.innerHTML=`
@@ -444,110 +653,59 @@ function calculate(){
     <div class="res-card"><div class="val">${fmt(burnTime,2)} s</div><div class="lbl">Burn Time</div></div>
     <div class="res-card"><div class="val">${fmt(fM(propMass0),3)} ${mU}</div><div class="lbl">Propellant Mass</div></div>
     <div class="res-card"><div class="val">${fmt(fAlt(apogee),0)} ${aU}</div><div class="lbl">Est. Apogee</div></div>
-    <div class="res-card"><div class="val">${fmt(events[events.length-1]?.t||0,1)} s</div><div class="lbl">Total Flight Time</div></div>
-  `;
+    <div class="res-card"><div class="val">${fmt(events[events.length-1]?.t||0,1)} s</div><div class="lbl">Total Flight Time</div></div>`;
 
-  // ── Charts ──
   const thrustDisp=thrustData.filter((_,i)=>i%4===0);
   drawLineChart('thrustChart',thrustDisp.map(d=>d.t),[
     {data:thrustDisp.map(d=>fN(d.F)),color:'#4f9cf7',label:`Thrust (${tU})`},
-    {data:thrustDisp.map(d=>d.Pc*(imp?145.038:1)*0.15),color:'#f7954f',label:`Pc (${imp?'psi':'MPa'}) scaled`}
+    {data:thrustDisp.map(d=>d.Pc*(imp?145.038:1)*.15),color:'#f7954f',label:`Pc (${imp?'psi':'MPa'}) scaled`}
   ],'Time (s)',`Thrust (${tU})`);
   drawLineChart('flightChart',flightData.map(d=>d.t),[
     {data:flightData.map(d=>fAlt(d.alt)),color:'#4ff78a',label:`Altitude (${aU})`},
     {data:flightData.map(d=>(imp?d.v/MPS_FPS:d.v)*2),color:'#4f9cf7',label:`Velocity ×2 (${imp?'ft/s':'m/s'})`}
   ],'Time (s)',`Altitude (${aU})`,events.map(e=>({...e,alt:fAlt(e.alt)})));
 
-  const el=document.getElementById('evtList');
-  el.innerHTML=events.map(e=>`<div class="evt"><div class="evt-dot" style="background:${e.color}"></div><span><b>${e.t.toFixed(2)}s</b> @ ${fmt(fAlt(e.alt),0)} ${aU} — ${e.name}</span></div>`).join('');
+  document.getElementById('evtList').innerHTML=events.map(e=>`<div class="evt"><div class="evt-dot" style="background:${e.color}"></div><span><b>${e.t.toFixed(2)}s</b> @ ${fmt(fAlt(e.alt),0)} ${aU} — ${e.name}</span></div>`).join('');
+
+  // Re-run burn sim data
+  runBurnSim();
+  burnT=0;
+  const btn=document.getElementById('burnPlay');
+  if(btn){btn.innerHTML='&#9654;';btn.classList.remove('active');}
+  burnPlaying=false;
+  if(document.getElementById('tab-burn').classList.contains('active')) drawBurnFrame();
 }
 
-function findExitPressureRatio(g,eps){
-  let M=2;
-  for(let i=0;i<50;i++){
-    const t=1+(g-1)/2*M*M;
-    const epsCalc=(1/M)*Math.pow(2/(g+1)*t,(g+1)/(2*(g-1)));
-    if(Math.abs(epsCalc-eps)<1e-6) break;
-    M+=(eps>epsCalc)?0.05:-0.02;
-    M=Math.max(1.01,M);
-  }
-  return Math.pow(1+(g-1)/2*M*M,-g/(g-1));
-}
-function motorClass(impulse){
-  const c=['1/4A','1/2A','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O'];
-  let th=0.625;
-  for(let i=0;i<c.length;i++){if(impulse<=th)return c[i];th*=2;}
-  return 'O+';
-}
+function motorClass(imp){const c=['1/4A','1/2A','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O'];let th=.625;for(let i=0;i<c.length;i++){if(imp<=th)return c[i];th*=2;}return 'O+';}
 
-// ── Canvas Chart ──
 function drawLineChart(id,xData,series,xLabel,yLabel,events){
-  const canvas=document.getElementById(id);
-  if(!canvas) return;
-  const dpr=window.devicePixelRatio||1;
-  const rect=canvas.getBoundingClientRect();
-  canvas.width=rect.width*dpr; canvas.height=rect.height*dpr;
-  const ctx=canvas.getContext('2d');
-  ctx.scale(dpr,dpr);
-  const W=rect.width,H=rect.height;
-  const pad={t:20,r:15,b:35,l:55};
-  const pw=W-pad.l-pad.r, ph=H-pad.t-pad.b;
-  const xMin=0, xMax=Math.max(...xData,0.1);
-  let yMax=0;
-  series.forEach(s=>{yMax=Math.max(yMax,...s.data.map(Math.abs));});
-  const yMin=series.some(s=>s.data.some(d=>d<0))?-yMax*0.3:0;
-  yMax*=1.1;
+  const canvas=document.getElementById(id);if(!canvas)return;
+  const dpr=window.devicePixelRatio||1,rect=canvas.getBoundingClientRect();
+  canvas.width=rect.width*dpr;canvas.height=rect.height*dpr;
+  const ctx=canvas.getContext('2d');ctx.scale(dpr,dpr);
+  const W=rect.width,H=rect.height,pad={t:20,r:15,b:35,l:55},pw=W-pad.l-pad.r,ph=H-pad.t-pad.b;
+  const xMin=0,xMax=Math.max(...xData,.1);
+  let yMax=0;series.forEach(s=>{yMax=Math.max(yMax,...s.data.map(Math.abs));});
+  const yMin=series.some(s=>s.data.some(d=>d<0))?-yMax*.3:0;yMax*=1.1;
   ctx.strokeStyle='#2a2e38';ctx.lineWidth=1;
-  for(let i=0;i<=5;i++){
-    const y=pad.t+ph*(1-i/5);
-    ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(pad.l+pw,y);ctx.stroke();
-    ctx.fillStyle='#666';ctx.font='10px system-ui';ctx.textAlign='right';
-    ctx.fillText((yMin+(yMax-yMin)*i/5).toFixed(1),pad.l-5,y+3);
-  }
-  for(let i=0;i<=5;i++){
-    const x=pad.l+pw*i/5;
-    ctx.fillStyle='#666';ctx.textAlign='center';
-    ctx.fillText((xMin+(xMax-xMin)*i/5).toFixed(1),x,H-pad.b+15);
-  }
-  ctx.fillStyle='#888';ctx.font='11px system-ui';ctx.textAlign='center';
-  ctx.fillText(xLabel,pad.l+pw/2,H-5);
+  for(let i=0;i<=5;i++){const y=pad.t+ph*(1-i/5);ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(pad.l+pw,y);ctx.stroke();ctx.fillStyle='#666';ctx.font='10px system-ui';ctx.textAlign='right';ctx.fillText((yMin+(yMax-yMin)*i/5).toFixed(1),pad.l-5,y+3);}
+  for(let i=0;i<=5;i++){const x=pad.l+pw*i/5;ctx.fillStyle='#666';ctx.textAlign='center';ctx.fillText((xMin+(xMax-xMin)*i/5).toFixed(1),x,H-pad.b+15);}
+  ctx.fillStyle='#888';ctx.font='11px system-ui';ctx.textAlign='center';ctx.fillText(xLabel,pad.l+pw/2,H-5);
   ctx.save();ctx.translate(12,pad.t+ph/2);ctx.rotate(-Math.PI/2);ctx.fillText(yLabel,0,0);ctx.restore();
-
   series.forEach(s=>{
-    ctx.save();
-    ctx.strokeStyle=s.color;ctx.lineWidth=3;ctx.shadowColor=s.color;ctx.shadowBlur=6;ctx.globalAlpha=1;ctx.beginPath();
-    xData.forEach((x,i)=>{
-      const px=pad.l+(x-xMin)/(xMax-xMin)*pw;
-      const py=pad.t+(1-(s.data[i]-yMin)/(yMax-yMin))*ph;
-      i===0?ctx.moveTo(px,py):ctx.lineTo(px,py);
-    });
-    ctx.stroke();
-    ctx.shadowBlur=0;
-    ctx.restore();
+    ctx.save();ctx.strokeStyle=s.color;ctx.lineWidth=3;ctx.shadowColor=s.color;ctx.shadowBlur=6;ctx.beginPath();
+    xData.forEach((x,i)=>{const px=pad.l+(x-xMin)/(xMax-xMin)*pw,py=pad.t+(1-(s.data[i]-yMin)/(yMax-yMin))*ph;i===0?ctx.moveTo(px,py):ctx.lineTo(px,py);});
+    ctx.stroke();ctx.shadowBlur=0;ctx.restore();
   });
-
   let lx=pad.l+10;
-  series.forEach(s=>{
-    ctx.fillStyle=s.color;ctx.font='10px system-ui';
-    ctx.fillText(s.label,lx,pad.t-7);
-    lx+=ctx.measureText(s.label).width+20;
-  });
-
-  if(events){
-    events.forEach(e=>{
-      const px=pad.l+(e.t-xMin)/(xMax-xMin)*pw;
-      if(px>pad.l&&px<pad.l+pw){
-        ctx.strokeStyle=e.color;ctx.lineWidth=1;ctx.setLineDash([3,3]);
-        ctx.beginPath();ctx.moveTo(px,pad.t);ctx.lineTo(px,pad.t+ph);ctx.stroke();
-        ctx.setLineDash([]);
-      }
-    });
-  }
+  series.forEach(s=>{ctx.fillStyle=s.color;ctx.font='10px system-ui';ctx.fillText(s.label,lx,pad.t-7);lx+=ctx.measureText(s.label).width+20;});
+  if(events) events.forEach(e=>{const px=pad.l+(e.t-xMin)/(xMax-xMin)*pw;if(px>pad.l&&px<pad.l+pw){ctx.strokeStyle=e.color;ctx.lineWidth=1;ctx.setLineDash([3,3]);ctx.beginPath();ctx.moveTo(px,pad.t);ctx.lineTo(px,pad.t+ph);ctx.stroke();ctx.setLineDash([]);}});
 }
 
 // ── Init ──
 buildSidebar();
-buildMain();
+buildAnalysis();
+buildBurnTab();
 setTimeout(calculate,100);
 </script>
 </body>
