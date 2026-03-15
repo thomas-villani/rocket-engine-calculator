@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Rocket Engine Calculator</title>
+<title>Villani Rocket Engine Calculator</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{--bg:#1a1d23;--panel:#22262e;--border:#333840;--accent:#4f9cf7;--accent2:#f7954f;--accent3:#4ff78a;--text:#e0e4ea;--dim:#8890a0;--red:#f74f4f;--warn:#f7d74f}
@@ -112,7 +112,7 @@ svg{display:block}
 </head>
 <body>
 <div class="header">
-  <h1>&#9650; Rocket Engine Calculator</h1>
+  <h1>&#9650; Villani Rocket Engine Calculator and Simulator</h1>
   <span class="sub">BATES Grain &bull; De Laval Nozzle &bull; Flight Simulation</span>
   <span class="spacer"></span>
   <div class="unit-toggle" id="unitToggle">
@@ -368,67 +368,29 @@ function drawBurnFrame(){
     const gy=cy-gh/2;
     const coreH=ri*2*scale;
 
-    // Fillet radius = regression distance (perpendicular burn)
-    const coreTop=cy-coreH/2, coreBot=cy+coreH/2;
-    const regDist=(frame.ri-S.grainID/2)*scale;
-    const r=Math.max(0,Math.min(regDist,gw/2-0.5,(gh-coreH)/2-0.5));
-    const P=Math.PI, P2=P*2, PH=P/2, P32=P*1.5;
-
-    // Propellant gradient
+    // Propellant
     const grad=ctx.createLinearGradient(gx,gy,gx,gy+gh);
-    grad.addColorStop(0,'#6b5b3a');grad.addColorStop(0.3,'#8a7550');
-    grad.addColorStop(0.7,'#8a7550');grad.addColorStop(1,'#6b5b3a');
+    grad.addColorStop(0,'#6b5b3a');grad.addColorStop(0.3,'#8a7550');grad.addColorStop(0.7,'#8a7550');grad.addColorStop(1,'#6b5b3a');
     ctx.fillStyle=grad;
+    ctx.fillRect(gx,gy,gw,gh);
 
-    // Upper propellant (OD top to core top, with fillets)
-    ctx.beginPath();
-    ctx.moveTo(gx,gy);ctx.lineTo(gx+gw,gy);ctx.lineTo(gx+gw,coreTop+r);
-    if(r>0.5)ctx.arc(gx+gw-r,coreTop+r,r,0,P32,true);else ctx.lineTo(gx+gw,coreTop);
-    ctx.lineTo(gx+r,coreTop);
-    if(r>0.5)ctx.arc(gx+r,coreTop+r,r,P32,P,true);else ctx.lineTo(gx,coreTop);
-    ctx.closePath();ctx.fill();
-
-    // Lower propellant (core bottom to OD bottom, with fillets)
-    ctx.beginPath();
-    if(r>0.5){ctx.moveTo(gx,coreBot-r);ctx.arc(gx+r,coreBot-r,r,P,PH,true);}
-    else{ctx.moveTo(gx,coreBot);}
-    ctx.lineTo(gx+gw-r,coreBot);
-    if(r>0.5)ctx.arc(gx+gw-r,coreBot-r,r,PH,0,true);else ctx.lineTo(gx+gw,coreBot);
-    ctx.lineTo(gx+gw,gy+gh);ctx.lineTo(gx,gy+gh);ctx.closePath();ctx.fill();
-
-    // Core void glow fill
-    const coreGrad=ctx.createRadialGradient(gx+gw/2,cy,coreH*0.15,gx+gw/2,cy,coreH*0.6);
+    // Core bore (hollow center)
+    const coreGrad=ctx.createRadialGradient(gx+gw/2,cy,coreH*0.2,gx+gw/2,cy,coreH*0.6);
     coreGrad.addColorStop(0,'#f74f4f');coreGrad.addColorStop(0.4,'#f7954f');coreGrad.addColorStop(1,'#1a1d23');
     ctx.fillStyle=coreGrad;
-    ctx.beginPath();
-    if(r>0.5){ctx.moveTo(gx,coreTop+r);ctx.arc(gx+r,coreTop+r,r,P,P32,false);}
-    else{ctx.moveTo(gx,coreTop);}
-    ctx.lineTo(gx+gw-r,coreTop);
-    if(r>0.5)ctx.arc(gx+gw-r,coreTop+r,r,P32,0,false);
-    ctx.lineTo(gx+gw,coreBot-r);
-    if(r>0.5)ctx.arc(gx+gw-r,coreBot-r,r,0,PH,false);
-    ctx.lineTo(gx+r,coreBot);
-    if(r>0.5)ctx.arc(gx+r,coreBot-r,r,PH,P,false);
-    ctx.closePath();ctx.fill();
+    ctx.fillRect(gx,cy-coreH/2,gw,coreH);
 
-    // Burn surface glow — inner void perimeter
+    // Burn surface indicators — glowing edges
+    // Inner core walls
     ctx.shadowColor='#f74f4f';ctx.shadowBlur=8;
     ctx.strokeStyle='#ff6644';ctx.lineWidth=2;
-    ctx.beginPath();
-    if(r>0.5){ctx.moveTo(gx,coreTop+r);ctx.arc(gx+r,coreTop+r,r,P,P32,false);}
-    else{ctx.moveTo(gx,coreTop);}
-    ctx.lineTo(gx+gw-r,coreTop);
-    if(r>0.5)ctx.arc(gx+gw-r,coreTop+r,r,P32,0,false);
-    ctx.lineTo(gx+gw,coreBot-r);
-    if(r>0.5)ctx.arc(gx+gw-r,coreBot-r,r,0,PH,false);
-    ctx.lineTo(gx+r,coreBot);
-    if(r>0.5)ctx.arc(gx+r,coreBot-r,r,PH,P,false);
-    ctx.closePath();ctx.stroke();
-    // Exposed face glow (outer face edges, above/below core)
-    ctx.beginPath();ctx.moveTo(gx,gy);ctx.lineTo(gx,coreTop+r);ctx.stroke();
-    ctx.beginPath();ctx.moveTo(gx,coreBot-r);ctx.lineTo(gx,gy+gh);ctx.stroke();
-    ctx.beginPath();ctx.moveTo(gx+gw,gy);ctx.lineTo(gx+gw,coreTop+r);ctx.stroke();
-    ctx.beginPath();ctx.moveTo(gx+gw,coreBot-r);ctx.lineTo(gx+gw,gy+gh);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(gx,cy-coreH/2);ctx.lineTo(gx+gw,cy-coreH/2);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(gx,cy+coreH/2);ctx.lineTo(gx+gw,cy+coreH/2);ctx.stroke();
+    // Exposed faces
+    ctx.beginPath();ctx.moveTo(gx,cy-coreH/2);ctx.lineTo(gx,cy-gh/2);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(gx,cy+coreH/2);ctx.lineTo(gx,cy+gh/2);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(gx+gw,cy-coreH/2);ctx.lineTo(gx+gw,cy-gh/2);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(gx+gw,cy+coreH/2);ctx.lineTo(gx+gw,cy+gh/2);ctx.stroke();
     ctx.shadowBlur=0;
 
     // Grain outline
